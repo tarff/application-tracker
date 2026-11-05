@@ -39,6 +39,8 @@ export function ApplicationForm({ application }: { application?: Application }) 
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [isDateIncomplete, setIsDateIncomplete] = useState(false);
+  const dateValidity = useRef<{ badInput: boolean } | null>(null);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [pendingLeave, setPendingLeave] = useState<(() => void) | null>(null);
   // State updates wait for a render, so a double tap can fire twice before isBusy changes.
@@ -76,7 +78,9 @@ export function ApplicationForm({ application }: { application?: Application }) 
   async function save() {
     if (busyRef.current) return;
     setHasTriedToSave(true);
-    if (Object.keys(validate(values)).length > 0) return;
+    const hasIncompleteDate = dateValidity.current?.badInput ?? false;
+    setIsDateIncomplete(hasIncompleteDate);
+    if (hasIncompleteDate || Object.keys(validate(values)).length > 0) return;
 
     busyRef.current = true;
     setIsBusy(true);
@@ -197,7 +201,12 @@ export function ApplicationForm({ application }: { application?: Application }) 
             <DateField
               value={values.date_applied}
               disabled={isBusy}
-              onChange={setField('date_applied')}
+              error={isDateIncomplete ? 'Finish the date, or clear it.' : undefined}
+              validityRef={dateValidity}
+              onChange={(value) => {
+                setIsDateIncomplete(false);
+                setField('date_applied')(value);
+              }}
             />
 
             <View className="mb-6 rounded-[15px] bg-white px-4 pb-1 pt-4" style={cardShadow}>

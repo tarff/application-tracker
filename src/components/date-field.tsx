@@ -1,5 +1,5 @@
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import { useState, type RefObject } from 'react';
 import { Image, Modal, Platform, Pressable, Text, View } from 'react-native';
 
 import { PrimaryButton, SoftButton } from '@/components/buttons';
@@ -10,6 +10,9 @@ export type DateFieldProps = {
   value: string;
   disabled: boolean;
   onChange: (value: string) => void;
+  // Web only, for a half-typed date. A phone's picker always gives a whole date.
+  error?: string;
+  validityRef?: RefObject<{ badInput: boolean } | null>;
 };
 
 // The web version is in date-field.web.tsx, because this picker package has no web support.

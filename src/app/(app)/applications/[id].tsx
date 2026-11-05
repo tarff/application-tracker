@@ -20,6 +20,12 @@ type LoadState =
 
 export default function EditApplicationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  // A new id gets a new screen. Otherwise the form could keep one application's values while
+  // Save writes them to another.
+  return <EditApplication key={id} id={id} />;
+}
+
+function EditApplication({ id }: { id: string }) {
   const router = useRouter();
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<LoadState>({ kind: 'loading' });

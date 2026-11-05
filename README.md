@@ -78,7 +78,8 @@ How each result was checked:
 - **Browser:** driven in Chrome against the local or live web version
 - **Owner:** tested by the owner on their own device
 
-`npm run test:rls` passed 28 of 28 on the final code, at commit `863e549`.
+`npm run test:rls` passed 28 of 28 at commit `863e549`. The later commits change only the edit
+screen, the form's date check and this README, not the database or the list query.
 
 ### Sign-in and access
 
@@ -125,7 +126,6 @@ How each result was checked:
 - The web address is public. New sign-ups are turned off in Supabase.
 - The app has not been submitted to either app store.
 - A request that hangs has no time limit, so a form stays locked until the connection gives up.
-- On the web, a partly typed date saves as no date, without a warning.
 - Android has not been run on a real device.
 - Six packages sit one release behind what Expo expects, so `expo-doctor` reports one failed check.
   The machine's 7-day package age rule blocks the newer versions until 2026-11-10. Then run
