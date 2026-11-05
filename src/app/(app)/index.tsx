@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { SoftButton } from '@/components/buttons';
 import { Screen, ScreenHeader } from '@/components/screen';
@@ -117,19 +117,25 @@ export default function ApplicationsScreen() {
               Could not sign out. Please try again.
             </Text>
           )}
-
-          <View className="flex-row flex-wrap" accessibilityRole="radiogroup">
-            {FILTERS.map((option) => (
-              <StatusChip
-                key={option.value}
-                label={option.label}
-                accessibilityLabel={`Show ${option.label}`}
-                isSelected={filter === option.value}
-                onPress={() => setFilter(option.value)}
-              />
-            ))}
-          </View>
         </View>
+
+        {/* Without flexGrow 0, a sideways list also stretches down and pushes everything below it. */}
+        <ScrollView
+          horizontal
+          style={{ flexGrow: 0 }}
+          contentContainerClassName="px-[22px]"
+          accessibilityRole="radiogroup"
+        >
+          {FILTERS.map((option) => (
+            <StatusChip
+              key={option.value}
+              label={option.label}
+              accessibilityLabel={`Show ${option.label}`}
+              isSelected={filter === option.value}
+              onPress={() => setFilter(option.value)}
+            />
+          ))}
+        </ScrollView>
 
         {state.kind === 'loading' && (
           <View className="flex-1 items-center justify-center">

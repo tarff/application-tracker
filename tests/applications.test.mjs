@@ -8,6 +8,8 @@ import {
   filterByStatus,
   formatDate,
   isValidJobUrl,
+  parseDate,
+  toDateValue,
   toFormValues,
   todayLocal,
   toRow,
@@ -76,9 +78,14 @@ test('an invalid job link shows an error and an empty one does not', () => {
   assert.equal(validate({ ...valid, job_url: '  ' }).job_url, undefined);
 });
 
-for (const date of ['06/11/2026', '2026-13-01', '2026-02-30', 'soon']) {
-  test(`rejects date ${date}`, () => assert.ok(validate({ ...valid, date_applied: date }).date_applied));
+for (const date of ['06/11/2026', '2026-13-01', '2026-02-30', 'soon', '']) {
+  test(`"${date}" opens the picker with no date selected`, () => assert.equal(parseDate(date), null));
 }
+
+test('a date chosen in the picker saves as that same day in a timezone ahead of UTC', () => {
+  process.env.TZ = 'Australia/Melbourne';
+  assert.equal(toDateValue(parseDate('2026-03-15')), '2026-03-15');
+});
 
 test('an empty date is allowed and saves as no date', () => {
   const values = { ...valid, date_applied: '' };

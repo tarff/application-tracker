@@ -23,7 +23,7 @@ export type FormValues = {
   notes: string;
 };
 
-export type FormErrors = Partial<Record<'company' | 'role' | 'job_url' | 'date_applied', string>>;
+export type FormErrors = Partial<Record<'company' | 'role' | 'job_url', string>>;
 
 // The most rows one request can return: max_rows in supabase/config.toml.
 const MAX_ROWS_PER_REQUEST = 1000;
@@ -64,10 +64,14 @@ export function statusLabel(value: string) {
 
 // Built from local date parts, because toISOString() gives the UTC date, which is the previous
 // day in Melbourne until mid-morning.
+export function toDateValue(date: Date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 export function todayLocal(now = new Date()) {
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${now.getFullYear()}-${month}-${day}`;
+  return toDateValue(now);
 }
 
 export function isValidJobUrl(url: string) {
@@ -76,7 +80,7 @@ export function isValidJobUrl(url: string) {
 
 // Parsed as a local date, because new Date('2026-11-06') means UTC midnight and can display as
 // the previous day.
-function parseDate(value: string) {
+export function parseDate(value: string) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
   const [year, month, day] = match.slice(1).map(Number);
@@ -122,10 +126,6 @@ export function validate(values: FormValues) {
   const jobUrl = values.job_url.trim();
   if (jobUrl && !isValidJobUrl(jobUrl)) {
     errors.job_url = 'Enter a link starting with http:// or https://.';
-  }
-  const date = values.date_applied.trim();
-  if (date && !parseDate(date)) {
-    errors.date_applied = 'Enter a real date as YYYY-MM-DD, or leave this empty.';
   }
   return errors;
 }

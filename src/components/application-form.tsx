@@ -12,6 +12,7 @@ import {
 
 import { PrimaryButton, SoftButton } from '@/components/buttons';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { DateField } from '@/components/date-field';
 import { Field } from '@/components/field';
 import { Screen, ScreenHeader } from '@/components/screen';
 import { StatusChip } from '@/components/status-chip';
@@ -193,20 +194,10 @@ export function ApplicationForm({ application }: { application?: Application }) 
                 ) : undefined
               }
             />
-            <Field
-              label="Date applied (YYYY-MM-DD)"
+            <DateField
               value={values.date_applied}
-              onChangeText={setField('date_applied')}
-              error={errors.date_applied}
-              editable={!isBusy}
-              autoCorrect={false}
-              keyboardType="numbers-and-punctuation"
-              icon={
-                <Image
-                  source={require('@/assets/design/calendar.png')}
-                  style={{ width: 24, height: 24 }}
-                />
-              }
+              disabled={isBusy}
+              onChange={setField('date_applied')}
             />
 
             <View className="mb-6 rounded-[15px] bg-white px-4 pb-1 pt-4" style={cardShadow}>

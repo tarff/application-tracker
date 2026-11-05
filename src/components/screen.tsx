@@ -1,18 +1,17 @@
 import type { ReactNode } from 'react';
-import { ImageBackground, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
-    <ImageBackground
-      source={require('@/assets/design/background.png')}
-      style={{ flex: 1, backgroundColor: 'white' }}
-      // Without this, the web version shows the image at its original size instead of filling.
-      imageStyle={{ width: '100%', height: '100%' }}
-      resizeMode="cover"
-    >
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <Image
+        source={require('@/assets/design/background.png')}
+        style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
+        resizeMode="cover"
+      />
       <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
-    </ImageBackground>
+    </View>
   );
 }
 
