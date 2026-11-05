@@ -46,8 +46,9 @@ export function ApplicationForm({ application }: { application?: Application }) 
   const hasChanges = (Object.keys(values) as (keyof FormValues)[]).some(
     (key) => values[key] !== initialValues[key],
   );
-  const disablePrevention = usePreventRemove(hasChanges && !isLeaving, ({ repeat }) => {
-    setPendingLeave(() => repeat);
+  // Leaving is blocked during a save or delete, so a request cannot finish after "Discard changes".
+  const disablePrevention = usePreventRemove((hasChanges || isBusy) && !isLeaving, ({ repeat }) => {
+    if (!busyRef.current) setPendingLeave(() => repeat);
   });
 
   const errors = hasTriedToSave ? validate(values) : {};
@@ -147,6 +148,7 @@ export function ApplicationForm({ application }: { application?: Application }) 
                 accessibilityRole="button"
                 accessibilityLabel="Back"
                 hitSlop={10}
+                disabled={isBusy}
                 onPress={goBack}
               >
                 <Image
@@ -163,18 +165,21 @@ export function ApplicationForm({ application }: { application?: Application }) 
               value={values.company}
               onChangeText={setField('company')}
               error={errors.company}
+              editable={!isBusy}
             />
             <Field
               label="Role"
               value={values.role}
               onChangeText={setField('role')}
               error={errors.role}
+              editable={!isBusy}
             />
             <Field
               label="Job link"
               value={values.job_url}
               onChangeText={setField('job_url')}
               error={errors.job_url}
+              editable={!isBusy}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="url"
@@ -193,6 +198,7 @@ export function ApplicationForm({ application }: { application?: Application }) 
               value={values.date_applied}
               onChangeText={setField('date_applied')}
               error={errors.date_applied}
+              editable={!isBusy}
               autoCorrect={false}
               keyboardType="numbers-and-punctuation"
               icon={
@@ -212,6 +218,7 @@ export function ApplicationForm({ application }: { application?: Application }) 
                     label={status.label}
                     accessibilityLabel={`Status: ${status.label}`}
                     isSelected={values.status === status.value}
+                    disabled={isBusy}
                     onPress={() => setField('status')(status.value)}
                   />
                 ))}
@@ -222,6 +229,7 @@ export function ApplicationForm({ application }: { application?: Application }) 
               label="Notes"
               value={values.notes}
               onChangeText={setField('notes')}
+              editable={!isBusy}
               multiline
               textAlignVertical="top"
             />

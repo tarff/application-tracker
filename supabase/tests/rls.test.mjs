@@ -156,6 +156,26 @@ test('the list sorts newest date first, with no date last', async () => {
   await sorter.from('applications').delete().eq('company', 'Sort');
 });
 
+test('the list returns every row when there are more than one request can return', async () => {
+  const paged = newClient();
+  await signUp(paged);
+  const rowCount = 1001; // One more than max_rows in supabase/config.toml.
+  const rows = Array.from({ length: rowCount }, (_, i) => ({
+    company: 'Paging',
+    role: `Role ${i}`,
+    date_applied: '2026-01-15',
+  }));
+  const { error: insertError } = await paged.from('applications').insert(rows);
+  assert.ifError(insertError);
+
+  const { data, error } = await listApplications(paged);
+  assert.ifError(error);
+  assert.equal(data.length, rowCount);
+  assert.equal(new Set(data.map((row) => row.id)).size, rowCount);
+
+  await paged.from('applications').delete().eq('company', 'Paging');
+});
+
 test('User B cannot see User A rows', async () => {
   const { data, error } = await userB.from('applications').select();
   assert.ifError(error);

@@ -25,12 +25,27 @@ export type FormValues = {
 
 export type FormErrors = Partial<Record<'company' | 'role' | 'job_url' | 'date_applied', string>>;
 
-export function listApplications(client: SupabaseClient<Database>) {
-  return client
-    .from('applications')
-    .select('*')
-    .order('date_applied', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
+// The most rows one request can return: max_rows in supabase/config.toml.
+const MAX_ROWS_PER_REQUEST = 1000;
+
+export async function listApplications(client: SupabaseClient<Database>) {
+  const applications: Application[] = [];
+  while (true) {
+    const { data, error, count } = await client
+      .from('applications')
+      .select('*', { count: 'exact' })
+      .order('date_applied', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      // Rows that tie on both dates need a fixed order, or one could repeat or be missed across requests.
+      .order('id')
+      .range(applications.length, applications.length + MAX_ROWS_PER_REQUEST - 1);
+    if (error) return { data: null, error };
+
+    applications.push(...data);
+    if (data.length === 0 || applications.length >= (count ?? 0)) {
+      return { data: applications, error: null };
+    }
+  }
 }
 
 export function filterByStatus(applications: Application[], filter: StatusFilter) {
