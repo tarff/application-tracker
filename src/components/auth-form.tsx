@@ -19,6 +19,8 @@ function authErrorMessage(error: AuthError) {
       return 'That email is already in use. Sign in instead.';
     case 'weak_password':
       return error.message;
+    case 'signup_disabled':
+      return 'New sign-ups are turned off.';
     case 'email_address_invalid':
     case 'validation_failed':
       return 'Enter a valid email address.';
