@@ -78,14 +78,13 @@ How each result was checked:
 - **Browser:** driven in Chrome against the local or live web version
 - **Owner:** tested by the owner on their own device
 
-`npm run test:rls` last passed 28 of 28 at commit `90c946b`. The only later commits change the
-screens, the date field and this README, not the database or the list query.
+`npm run test:rls` passed 28 of 28 on the final code, at commit `863e549`.
 
 ### Sign-in and access
 
 | Test | Result | How |
 |---|---|---|
-| A new user can sign up, sign out and sign back in on the web and on a phone | **To confirm** | Sign-up works through the API (Automated) and the owner used a second account on a phone (Owner). Sign-up in the web form was not specifically confirmed |
+| A new user can sign up, sign out and sign back in on the web and on a phone | Pass | Owner, using the live web form and a second account on a phone. Sign-up also passes through the API (Automated) |
 | A signed-out user who opens the list's web address directly is sent to sign in | Pass | Browser, live site |
 | Closing and reopening the app keeps the user signed in | Pass | Owner, phone and live web |
 
@@ -94,7 +93,7 @@ screens, the date field and this README, not the database or the list query.
 | Test | Result | How |
 |---|---|---|
 | Add, edit and delete all work and persist after a restart | Pass | Owner, Browser |
-| An application added on the phone appears on the web after a refresh, and the reverse | **To confirm** | Phone to web passed (Owner). Web to phone was not specifically confirmed |
+| An application added on the phone appears on the web after a refresh, and the reverse | Pass | Owner, in both directions |
 | The date defaults to the user's local date, including early morning in Melbourne | Pass | Automated |
 | Sorting, the status filter and the count are correct, including applications with no date | Pass | Automated, Browser |
 | Empty company or role is rejected by the form and by a direct database insert | Pass | Automated, Browser |
@@ -105,7 +104,7 @@ screens, the date field and this README, not the database or the list query.
 
 | Test | Result | How |
 |---|---|---|
-| User B cannot see, edit or delete User A's applications, through the app and direct API calls | **To confirm** | Direct API calls passed (Automated). A second account saw none of the first account's data (Owner). Opening User A's edit address while signed in as User B was not run |
+| User B cannot see, edit or delete User A's applications, through the app and direct API calls | Pass | Direct API calls (Automated). A second account saw none of the first account's data, and opening User A's edit address showed "could not be found" (Owner) |
 | A direct API call with no sign-in returns no applications | Pass | Automated |
 | A `javascript:` job link is rejected by the form and by the database | Pass | Automated |
 | A search of the repository and the built web files finds no service role key | Pass | Searched the git history and the live site's files. The only matches are the secret check's own pattern, a comment in `supabase/config.toml` and Supabase's code that checks a key's prefix |
