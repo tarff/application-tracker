@@ -65,6 +65,9 @@ TypeScript types after each migration and commit them.
   `javascript:`, in the form and in the database.
 - Show notes and other user text as plain text, never as HTML.
 - Enforce required fields, blank checks and status values in the database as well as the form.
+- No secret ever goes on GitHub, including the database password. After cloning, run
+  `git config core.hooksPath .githooks` to turn on the check that blocks commits containing
+  secrets. Never bypass it with `--no-verify`.
 
 ## Known temporary issue
 

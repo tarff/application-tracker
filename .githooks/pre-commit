@@ -1,0 +1,36 @@
+#!/bin/sh
+# Blocks commits that would put secrets in the repository. Never prints a secret's value.
+fail=0
+
+envfiles=$(git ls-files --cached | grep -E '(^|/)\.env(\.[^/]*)?$' | grep -vE '(^|/)\.env\.example$')
+if [ -n "$envfiles" ]; then
+  echo "BLOCKED: environment file is staged:"
+  echo "$envfiles"
+  fail=1
+fi
+
+# sb_secret_ and service role keys, sb_publishable_ keys, Supabase JWTs, GitHub tokens,
+# database addresses that include a password, and filled-in service role variables.
+pattern='sb_secret_[A-Za-z0-9]|sb_publishable_[A-Za-z0-9]|eyJhbGciOi|gh[opsu]_[A-Za-z0-9]{20}|github_pat_|postgres(ql)?://[^:/ ]+:[^@ ]+@|SERVICE_ROLE_KEY *= *[^ ]'
+matches=$(git grep --cached -lIE "$pattern" -- . ':!.githooks')
+if [ -n "$matches" ]; then
+  echo "BLOCKED: possible secret in:"
+  echo "$matches"
+  fail=1
+fi
+
+# Any value from the local .env file, wherever it appears.
+if [ -f .env ]; then
+  values=$(tr -d '\r' < .env | grep -vE '^[[:space:]]*#' | sed -n 's/^[^=]*=//p')
+  for value in $values; do
+    if git grep --cached -qF -- "$value"; then
+      echo "BLOCKED: a value from .env appears in a staged file."
+      fail=1
+    fi
+  done
+fi
+
+if [ "$fail" -ne 0 ]; then
+  echo "Commit stopped. Remove the secret and try again."
+  exit 1
+fi
