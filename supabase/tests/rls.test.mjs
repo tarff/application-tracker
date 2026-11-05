@@ -52,6 +52,33 @@ after(async () => {
   await userB.from('applications').delete().eq('user_id', idB);
 });
 
+test('a wrong password returns the code the sign-in form expects', async () => {
+  const { data } = await userA.auth.getUser();
+  const { error } = await anon.auth.signInWithPassword({
+    email: data.user.email,
+    password: randomUUID(),
+  });
+  assert.equal(error?.code, 'invalid_credentials');
+});
+
+test('an email already in use returns a code the sign-up form expects', async () => {
+  const { data } = await userA.auth.getUser();
+  const { error } = await newClient().auth.signUp({
+    email: data.user.email,
+    password: randomUUID(),
+  });
+  assert.ok(['email_exists', 'user_already_exists'].includes(error?.code), `Got ${error?.code}`);
+});
+
+test('a weak password returns the code the sign-up form expects', async () => {
+  const { error } = await newClient().auth.signUp({
+    email: `rls-test-${randomUUID()}@example.com`,
+    password: 'a',
+  });
+  assert.equal(error?.code, 'weak_password');
+  assert.ok(error.message, 'The form shows this message, so it must not be empty');
+});
+
 test('a new row gets the signed-in user, default status and database timestamps', () => {
   assert.equal(rowA.user_id, idA);
   assert.equal(rowA.status, 'applied');
