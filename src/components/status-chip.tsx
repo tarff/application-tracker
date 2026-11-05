@@ -10,13 +10,17 @@ type StatusChipProps = {
 export function StatusChip({ label, isSelected, accessibilityLabel, onPress }: StatusChipProps) {
   return (
     <Pressable
-      className={`mb-2 mr-2 rounded-full px-4 py-2 ${isSelected ? 'bg-blue-600' : 'bg-gray-100'}`}
+      className={`mb-3 mr-3 h-[34px] justify-center rounded-[10px] px-6 ${isSelected ? 'bg-primary' : 'bg-soft'}`}
       accessibilityRole="radio"
       accessibilityLabel={accessibilityLabel}
       aria-checked={isSelected}
       onPress={onPress}
     >
-      <Text className={isSelected ? 'font-semibold text-white' : 'text-gray-700'}>{label}</Text>
+      <Text
+        className={`text-[14px] ${isSelected ? 'font-heading text-white' : 'font-body text-primary'}`}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }

@@ -1,8 +1,11 @@
 import type { AuthError } from '@supabase/supabase-js';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 
+import { PrimaryButton } from '@/components/buttons';
+import { Field } from '@/components/field';
+import { Screen } from '@/components/screen';
 import { supabase } from '@/lib/supabase';
 
 const CONNECTION_ERROR = 'Could not connect. Check your connection and try again.';
@@ -60,67 +63,60 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   }
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-white" behavior="padding">
-      <ScrollView
-        contentContainerClassName="grow justify-center p-6"
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="w-full max-w-md self-center">
-          <Text className="mb-6 text-2xl font-semibold" accessibilityRole="header">
-            {title}
-          </Text>
-
-          <Text className="mb-1 text-sm text-gray-600">Email</Text>
-          <TextInput
-            className="mb-4 rounded-xl border border-gray-300 px-4 py-3"
-            accessibilityLabel="Email"
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect={false}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <Text className="mb-1 text-sm text-gray-600">Password</Text>
-          <TextInput
-            className="mb-4 rounded-xl border border-gray-300 px-4 py-3"
-            accessibilityLabel="Password"
-            autoCapitalize="none"
-            autoComplete={isSignIn ? 'current-password' : 'new-password'}
-            secureTextEntry
-            textContentType={isSignIn ? 'password' : 'newPassword'}
-            value={password}
-            onChangeText={setPassword}
-            onSubmitEditing={submit}
-          />
-
-          {error && (
-            <Text className="mb-4 text-red-600" accessibilityRole="alert">
-              {error}
+    <Screen>
+      <KeyboardAvoidingView className="flex-1" behavior="padding">
+        <ScrollView
+          contentContainerClassName="grow justify-center p-[22px]"
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="w-full max-w-[404px] self-center">
+            <Text
+              className="mb-7 text-center font-heading text-[19px] text-ink"
+              accessibilityRole="header"
+            >
+              {title}
             </Text>
-          )}
 
-          <Pressable
-            className={`mb-4 items-center rounded-xl bg-blue-600 py-3 ${isSubmitting ? 'opacity-50' : ''}`}
-            accessibilityRole="button"
-            accessibilityLabel={title}
-            disabled={isSubmitting}
-            onPress={submit}
-          >
-            <Text className="font-semibold text-white">{isSubmitting ? 'Please wait…' : title}</Text>
-          </Pressable>
+            <Field
+              label="Email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect={false}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-          <Link
-            className="text-center text-blue-600"
-            href={isSignIn ? '/sign-up' : '/sign-in'}
-            replace
-          >
-            {isSignIn ? 'New here? Sign up' : 'Already have an account? Sign in'}
-          </Link>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <Field
+              label="Password"
+              autoCapitalize="none"
+              autoComplete={isSignIn ? 'current-password' : 'new-password'}
+              secureTextEntry
+              textContentType={isSignIn ? 'password' : 'newPassword'}
+              value={password}
+              onChangeText={setPassword}
+              onSubmitEditing={submit}
+            />
+
+            {error && (
+              <Text className="mb-4 font-body text-[14px] text-red-600" accessibilityRole="alert">
+                {error}
+              </Text>
+            )}
+
+            <PrimaryButton label={title} isBusy={isSubmitting} onPress={submit} />
+
+            <Link
+              className="mt-6 text-center font-body text-[14px] text-primary"
+              href={isSignIn ? '/sign-up' : '/sign-in'}
+              replace
+            >
+              {isSignIn ? 'New here? Sign up' : 'Already have an account? Sign in'}
+            </Link>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </Screen>
   );
 }

@@ -6,7 +6,21 @@ module.exports = {
   darkMode: 'class',
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      // Values from the Figma file's colour and text styles.
+      colors: {
+        primary: '#5F33E1',
+        ink: '#24252C',
+        muted: '#6E6A7C',
+        soft: '#EDE8FF',
+        date: '#AB94FF',
+      },
+      // Each weight is its own font file, so weight comes from the family, not font-semibold.
+      fontFamily: {
+        body: ['LexendDeca_400Regular'],
+        heading: ['LexendDeca_600SemiBold'],
+      },
+    },
   },
   plugins: [],
 };

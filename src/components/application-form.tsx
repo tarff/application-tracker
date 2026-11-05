@@ -1,17 +1,19 @@
 import { useRouter, usePreventRemove } from 'expo-router';
-import { useRef, useState, type ComponentProps } from 'react';
+import { useRef, useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Linking,
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton, SoftButton } from '@/components/buttons';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { Field } from '@/components/field';
+import { Screen, ScreenHeader } from '@/components/screen';
 import { StatusChip } from '@/components/status-chip';
 import {
   emptyFormValues,
@@ -24,29 +26,7 @@ import {
   type FormValues,
 } from '@/lib/applications';
 import { supabase } from '@/lib/supabase';
-
-type FieldProps = ComponentProps<typeof TextInput> & {
-  label: string;
-  error?: string;
-};
-
-function Field({ label, error, className, ...inputProps }: FieldProps) {
-  return (
-    <View className="mb-4">
-      <Text className="mb-1 text-sm text-gray-600">{label}</Text>
-      <TextInput
-        className={`rounded-xl border px-4 py-3 ${error ? 'border-red-600' : 'border-gray-300'} ${className ?? ''}`}
-        accessibilityLabel={label}
-        {...inputProps}
-      />
-      {error && (
-        <Text className="mt-1 text-sm text-red-600" accessibilityRole="alert">
-          {error}
-        </Text>
-      )}
-    </View>
-  );
-}
+import { cardShadow } from '@/lib/theme';
 
 export function ApplicationForm({ application }: { application?: Application }) {
   const router = useRouter();
@@ -157,23 +137,27 @@ export function ApplicationForm({ application }: { application?: Application }) 
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <KeyboardAvoidingView className="flex-1" behavior="padding">
-        <ScrollView contentContainerClassName="p-6" keyboardShouldPersistTaps="handled">
-          <View className="w-full max-w-md self-center">
-            <Pressable
-              className="mb-4 self-start"
-              accessibilityRole="button"
-              accessibilityLabel="Back"
-              onPress={goBack}
-            >
-              <Text className="text-blue-600">Back</Text>
-            </Pressable>
+    <Screen>
+      <KeyboardAvoidingView className="w-full max-w-md flex-1 self-center" behavior="padding">
+        <ScrollView contentContainerClassName="px-[22px] pb-6" keyboardShouldPersistTaps="handled">
+          <ScreenHeader
+            title={application ? 'Edit application' : 'Add application'}
+            left={
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Back"
+                hitSlop={10}
+                onPress={goBack}
+              >
+                <Image
+                  source={require('@/assets/design/arrow-left.png')}
+                  style={{ width: 24, height: 24 }}
+                />
+              </Pressable>
+            }
+          />
 
-            <Text className="mb-6 text-2xl font-semibold" accessibilityRole="header">
-              {application ? 'Edit application' : 'Add application'}
-            </Text>
-
+          <View>
             <Field
               label="Company"
               value={values.company}
@@ -194,17 +178,16 @@ export function ApplicationForm({ application }: { application?: Application }) 
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="url"
+              accessory={
+                application && isValidJobUrl(jobUrl) ? (
+                  <SoftButton
+                    label="Open job ad"
+                    role="link"
+                    onPress={() => Linking.openURL(jobUrl)}
+                  />
+                ) : undefined
+              }
             />
-            {application && isValidJobUrl(jobUrl) && (
-              <Pressable
-                className="mb-4 self-start"
-                accessibilityRole="link"
-                accessibilityLabel="Open job ad"
-                onPress={() => Linking.openURL(jobUrl)}
-              >
-                <Text className="text-blue-600">Open job ad</Text>
-              </Pressable>
-            )}
             <Field
               label="Date applied (YYYY-MM-DD)"
               value={values.date_applied}
@@ -212,24 +195,31 @@ export function ApplicationForm({ application }: { application?: Application }) 
               error={errors.date_applied}
               autoCorrect={false}
               keyboardType="numbers-and-punctuation"
+              icon={
+                <Image
+                  source={require('@/assets/design/calendar.png')}
+                  style={{ width: 24, height: 24 }}
+                />
+              }
             />
 
-            <Text className="mb-1 text-sm text-gray-600">Status</Text>
-            <View className="mb-2 flex-row flex-wrap" accessibilityRole="radiogroup">
-              {STATUSES.map((status) => (
-                <StatusChip
-                  key={status.value}
-                  label={status.label}
-                  accessibilityLabel={`Status: ${status.label}`}
-                  isSelected={values.status === status.value}
-                  onPress={() => setField('status')(status.value)}
-                />
-              ))}
+            <View className="mb-6 rounded-[15px] bg-white px-4 pb-1 pt-4" style={cardShadow}>
+              <Text className="mb-2 font-body text-[9px] text-muted">Status</Text>
+              <View className="flex-row flex-wrap" accessibilityRole="radiogroup">
+                {STATUSES.map((status) => (
+                  <StatusChip
+                    key={status.value}
+                    label={status.label}
+                    accessibilityLabel={`Status: ${status.label}`}
+                    isSelected={values.status === status.value}
+                    onPress={() => setField('status')(status.value)}
+                  />
+                ))}
+              </View>
             </View>
 
             <Field
               label="Notes"
-              className="min-h-24"
               value={values.notes}
               onChangeText={setField('notes')}
               multiline
@@ -237,30 +227,22 @@ export function ApplicationForm({ application }: { application?: Application }) 
             />
 
             {saveError && (
-              <Text className="mb-4 text-red-600" accessibilityRole="alert">
+              <Text className="mb-4 font-body text-[14px] text-red-600" accessibilityRole="alert">
                 {saveError}
               </Text>
             )}
 
-            <Pressable
-              className={`mb-3 items-center rounded-xl bg-blue-600 py-3 ${isBusy ? 'opacity-50' : ''}`}
-              accessibilityRole="button"
-              accessibilityLabel="Save"
-              disabled={isBusy}
-              onPress={save}
-            >
-              <Text className="font-semibold text-white">{isBusy ? 'Please wait…' : 'Save'}</Text>
-            </Pressable>
+            <PrimaryButton label="Save" isBusy={isBusy} onPress={save} />
 
             {application && (
               <Pressable
-                className="items-center rounded-xl py-3"
+                className="mt-3 h-[52px] items-center justify-center"
                 accessibilityRole="button"
                 accessibilityLabel="Delete application"
                 disabled={isBusy}
                 onPress={() => setIsConfirmingDelete(true)}
               >
-                <Text className="font-semibold text-red-600">Delete application</Text>
+                <Text className="font-heading text-[14px] text-red-600">Delete application</Text>
               </Pressable>
             )}
           </View>
@@ -285,6 +267,6 @@ export function ApplicationForm({ application }: { application?: Application }) 
         onConfirm={discardAndLeave}
         onCancel={() => setPendingLeave(null)}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
