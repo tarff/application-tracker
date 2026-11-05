@@ -41,7 +41,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test:rls": "node --env-file=.env --test supabase/tests/rls.test.mjs"
+    "test:rls": "node --env-file=.env --test supabase/tests/rls.test.mjs",
+    "test": "node --test tests/applications.test.mjs"
   },
   "private": true
 }

@@ -8,6 +8,8 @@ import { after, before, test } from 'node:test';
 
 import { createClient } from '@supabase/supabase-js';
 
+import { listApplications } from '../../src/lib/applications.ts';
+
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const newClient = () => createClient(url, key, { auth: { persistSession: false } });
@@ -133,6 +135,25 @@ test('the database accepts every status value', async () => {
       .insert({ company: 'Acme', role: 'Engineer', status });
     assert.ifError(error);
   }
+});
+
+test('the list sorts newest date first, with no date last', async () => {
+  const sorter = newClient();
+  await signUp(sorter);
+  const dates = ['2026-01-15', null, '2026-03-20', '2025-12-01'];
+  for (const date_applied of dates) {
+    const { error } = await sorter
+      .from('applications')
+      .insert({ company: 'Sort', role: 'Test', date_applied });
+    assert.ifError(error);
+  }
+  const { data, error } = await listApplications(sorter);
+  assert.ifError(error);
+  assert.deepEqual(
+    data.map((row) => row.date_applied),
+    ['2026-03-20', '2026-01-15', '2025-12-01', null],
+  );
+  await sorter.from('applications').delete().eq('company', 'Sort');
 });
 
 test('User B cannot see User A rows', async () => {

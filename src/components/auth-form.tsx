@@ -1,15 +1,7 @@
 import type { AuthError } from '@supabase/supabase-js';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
 
@@ -68,10 +60,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-white"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView className="flex-1 bg-white" behavior="padding">
       <ScrollView
         contentContainerClassName="grow justify-center p-6"
         keyboardShouldPersistTaps="handled"
@@ -117,7 +106,6 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
             className={`mb-4 items-center rounded-xl bg-blue-600 py-3 ${isSubmitting ? 'opacity-50' : ''}`}
             accessibilityRole="button"
             accessibilityLabel={title}
-            accessibilityState={{ disabled: isSubmitting }}
             disabled={isSubmitting}
             onPress={submit}
           >
