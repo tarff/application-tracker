@@ -4,7 +4,24 @@ A private list of job applications for iPhone, Android and the web, built from o
 codebase with Expo, NativeWind and Supabase. Each person sees only their own applications, and
 the database enforces that.
 
+I built this in a morning as a practice project, to learn a stack that was new to me: Expo, Supabase
+and building from a Figma design. All of the code was written through Claude Code, and the brief
+was drafted with Claude. I set the scope, directed the work and tested it on my own devices. To see
+how it was made, read
+[the product brief](Application%20Tracker%20PRD.md), [`CLAUDE.md`](CLAUDE.md), the commit history
+and the [acceptance test results](#acceptance-test-results).
+
+It runs on an iPhone through Expo Go and on the web. It is not in the App Store or Google Play.
+
+| Sign in | Applications | Edit an application |
+|---|---|---|
+| ![Sign-in screen](docs/screenshots/sign-in.png) | ![List of job applications with status labels](docs/screenshots/applications-list.png) | ![Form for editing an application](docs/screenshots/edit-application.png) |
+
+The screenshots use made-up sample data and were taken from the live site at phone size.
+
 Live web version: https://application-tracker-coral-six.vercel.app/
+
+New sign-ups are turned off, so you can only reach the sign-in screen there.
 
 ## Setup
 
@@ -18,6 +35,9 @@ git config core.hooksPath .githooks   # blocks commits containing secrets
 sfw npm ci
 cp .env.example .env
 ```
+
+`sfw` is [Socket Firewall](https://socket.dev/), which I use to screen packages as they install. It
+is optional: without it, run the same command without `sfw`, such as `npm ci`.
 
 Fill in `.env` with your project URL and publishable key from the Supabase dashboard. Never use
 the service role key, and never commit `.env`.
@@ -128,7 +148,8 @@ screen, the form's date check and this README, not the database or the list quer
 - A request that hangs has no time limit, so a form stays locked until the connection gives up.
 - Android has not been run on a real device.
 - Six packages sit one release behind what Expo expects, so `expo-doctor` reports one failed check.
-  The machine's 7-day package age rule blocks the newer versions until 2026-11-10. Then run
+  My npm setup refuses packages less than 7 days old, which blocks the newer versions until
+  2026-11-10. Then run
   `sfw npx expo install --fix` and re-run the checks.
 - `npm audit` reports 17 warnings: 2 high (`@expo/cli` and `zod`), 14 moderate and 1 low. Its
   suggested fix would downgrade Expo to an SDK that Expo Go cannot open, so do not run
