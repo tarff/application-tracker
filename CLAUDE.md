@@ -69,6 +69,32 @@ TypeScript types after each migration and commit them.
   `git config core.hooksPath .githooks` to turn on the check that blocks commits containing
   secrets. Never bypass it with `--no-verify`.
 
+## Review checkpoints
+
+Stop at each of these and wait for me. Commit after each working step.
+
+1. **Before any code:** read the brief and design, propose a plan, and let me cut anything
+   that won't fit.
+2. **Before a migration runs:** show me the SQL, including the Row Level Security policies.
+   I read every line.
+3. **After sign-in works:** I test that signed-out users are blocked, then test with a second
+   account.
+4. **After each screen:** I run it on a phone and compare it to the Figma design, and skim the
+   code. Read it closely if something looks wrong.
+5. **Before the walkthrough:** run typecheck and lint, then I skim the full diff and a fresh
+   Claude session reviews it.
+
+When reviewing, look for:
+
+- A service role key anywhere in the app
+- Row Level Security turned off, or a user's data only filtered in app code
+- Hardcoded sample data, or buttons that do nothing
+- Errors that are caught and ignored
+- Raw HTML being displayed, or forms that only validate on the screen
+- Packages I didn't ask for, or large files I can't explain
+
+If time runs short, cut features, not security, and tell me what was cut and why.
+
 ## Known temporary issue
 
 Six packages sit one release behind what Expo expects, because the machine's 7-day package age
