@@ -15,7 +15,7 @@ It runs on an iPhone through Expo Go and on the web. It is not in the App Store 
 
 | Sign in | Applications | Edit an application |
 |---|---|---|
-| ![Sign-in screen](docs/screenshots/sign-in.png) | ![List of job applications with status labels](docs/screenshots/applications-list.png) | ![Form for editing an application](docs/screenshots/edit-application.png) |
+| <img src="docs/screenshots/sign-in.png" width="240" alt="Sign-in screen"> | <img src="docs/screenshots/applications-list.png" width="240" alt="List of job applications with status labels"> | <img src="docs/screenshots/edit-application.png" width="240" alt="Form for editing an application"> |
 
 The screenshots use made-up sample data and were taken from the live site at phone size.
 
